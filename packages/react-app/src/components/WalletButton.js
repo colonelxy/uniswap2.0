@@ -1,38 +1,39 @@
-import React, { useState, useEffect} from 'react'
-import { shortenAddress as shortenAddress, useEthers, useLookupAddress } from '@usedapp/core';
+import React, { useEffect, useState } from "react";
+import { shortenAddress, useEthers, useLookupAddress } from "@usedapp/core";
 
-import styles from '../styles';
+import styles from "../styles";
 
 const WalletButton = () => {
-  const [accountAddress, setAccountAddress] = useState('');
+  const [rendered, setRendered] = useState("");
+
   const { ens } = useLookupAddress();
   const { account, activateBrowserWallet, deactivate } = useEthers();
 
   useEffect(() => {
-    if(ens) {
-      setAccountAddress(ens);
-    } else if(account){
-      setAccountAddress(shortenAddress(account));
+    if (ens) {
+      setRendered(ens);
+    } else if (account) {
+      setRendered(shortenAddress(account));
     } else {
-      setAccountAddress('');
+      setRendered("");
     }
+  }, [account, ens, setRendered]);
 
-  }, [account, ens, setAccountAddress])
-  
   return (
     <button
-      onclick={() => {
+      onClick={() => {
         if (!account) {
           activateBrowserWallet();
         } else {
           deactivate();
         }
       }}
-      className={styles.button}
+      className={styles.walletButton}
     >
-      {accountAddress || "Connect Wallet"}
+      {rendered === "" && "Connect Wallet"}
+      {rendered !== "" && rendered}
     </button>
-  )
-}
+  );
+};
 
-export default WalletButton
+export default WalletButton;
